@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %}{{ article.title }} | DailyPress{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <!-- ================= ARTICLE ================= -->
+
+    <h1 class="fw-bold mb-3">{{ article.title }}</h1>
+
+    <p class="text-muted mb-4">
+      Published on {{ article.date|date:"F d, Y" }}
+    </p>
+
+    {% if article.image %}
+      <img src="{{ article.image.url }}"
+           class="img-fluid rounded mb-4"
+           alt="{{ article.title }}">
+    {% endif %}
+
+    <div class="fs-5 lh-lg mb-5">
+      {{ article.body|linebreaks }}
+    </div>
+
+    <!-- ARTICLE EDIT / DELETE -->
+    {% if article.author == request.user %}
+      <div class="mb-5 d-flex gap-2">
+        <a href="{% url 'article_edit' article.id %}" class="btn btn-outline-secondary btn-sm">
+          Edit
+        </a>
+        <a href="{% url 'article_delete' article.id %}" class="btn btn-outline-danger btn-sm">
+          Delete
+        </a>
+      </div>
+    {% endif %}
+
+    <!-- ================= COMMENTS ================= -->
+
+    <section class="mt-5">
+
+      <!-- COMMENTS HEADER -->
+      <div class="mb-4">
+        <h5 class="fw-bold mb-1">
+          Reader Conversations
+        </h5>
+        <p class="text-muted small mb-0">
+          {{ comments.count }} responses · Thoughtful discussion encouraged
+        </p>
+      </div>
+
+      <!-- COMMENT INPUT -->
+      <div class="mb-5">
+          <form method="post">
+            {% csrf_token %}
+
+            <textarea
+              name="comment"
+              rows="4"
+              class="form-control shadow-none"
+              placeholder="Share a thoughtful response…"
+              style="
+                background:#fdfdfc;
+                border:1px solid #e5e7eb;
+                border-radius:14px;
+                padding:16px 18px;
+                font-size:16px;
+                line-height:1.6;
+                resize:none;
+              "
+              onfocus="this.style.borderColor='#d1d5db'"
+              onblur="this.style.borderColor='#e5e7eb'"
+            ></textarea>
+
+            <div class="text-end mt-3">
+              <button class="btn btn-dark btn-sm px-4 rounded-pill">
+                Publish
+              </button>
+            </div>
+          </form>
+      </div>
+
+      <!-- COMMENT STREAM -->
+      {% for comment in comments %}
+        <div class="py-4 border-top">
+
+          <!-- META -->
+          <div class="d-flex align-items-center gap-2 mb-1">
+
+            <!-- USER INITIAL -->
+            <div
+              class="d-flex align-items-center justify-content-center fw-semibold text-uppercase"
+              style="
+                width:28px;
+                height:28px;
+                font-size:13px;
+                background:#e5e7eb;
+                color:#111827;
+                border-radius:6px;
+              "
+            >
+              {{ comment.author.username|slice:":1" }}
+            </div>
+
+            <span class="fw-semibold small">
+              {{ comment.author.username }}
+            </span>
+
+            <span class="text-muted small">
+              · {{ comment.comment_date|localtime|timesince|truncatewords:2|cut:"," }} ago
+            </span>
+
+          </div>
+
+          <!-- COMMENT TEXT -->
+          <div
+            class="fs-6 mb-2"
+            style="
+              line-height:1.6;
+              color:#1f2937;
+            "
+          >
+            {{ comment.comment|linebreaks }}
+          </div>
+
+        </div>
+      {% empty %}
+        <div class="text-muted small py-4 border-top">
+          <span class="fw-semibold text-dark">No reader responses yet.</span>
+          <br>
+          Join the discussion and share your perspective.
+        </div>
+
+      {% endfor %}
+
+    </section>
+
+  </div>
+</div>
+
+{% endblock %}

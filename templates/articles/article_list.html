@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Home | DailyPress{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+<!-- PAGE TITLE -->
+<div class="mb-4">
+  <h1 class="fw-bold">Latest News</h1>
+  <p class="text-muted">Top stories and updates</p>
+</div>
+
+{% if article_list %}
+
+<!-- FEATURED ARTICLE -->
+<div class="card mb-5 shadow-sm">
+  {% if article_list.0.image %}
+   <a href="{{ article_list.0.get_absolute_url }}">
+    <img src="{{ article_list.0.image.url }}"
+         class="card-img-top"
+         style="max-height:420px; object-fit:cover;"
+         alt="{{ article_list.0.title }}">
+   </a>
+  {% endif %}
+
+  <div class="card-body p-4">
+    <span class="badge bg-danger mb-2">Featured</span>
+    <a href="{{ article_list.0.get_absolute_url }}" class="text-dark text-decoration-none">
+    <h2 class="card-title fw-bold mb-3">
+      {{ article_list.0.title }}
+    </h2>
+  </a>
+
+    <p class="card-text text-muted">
+      {{ article_list.0.body|truncatechars:220 }}
+    </p>
+
+  <a href="{{ article_list.0.get_absolute_url }}"
+
+       class="text-danger fw-semibold text-decoration-none">
+      Read full story →
+    </a>
+  </div>
+</div>
+
+<!-- ARTICLE GRID -->
+<div class="row g-4">
+
+  {% for article in article_list|slice:"1:" %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card h-100 shadow-sm">
+
+      {% if article.image %}
+      <a href="{{ article.get_absolute_url }}">
+      <img src="{{ article.image.url }}"
+           class="card-img-top"
+           style="height:200px; object-fit:cover;"
+           alt="{{ article.title }}">
+      </a>
+      {% endif %}
+
+      <div class="card-body">
+        <a href="{{ article.get_absolute_url }}" class="text-dark text-decoration-none">
+        <h5 class="card-title fw-bold">
+          {{ article.title }}
+        </h5>
+        </a>  
+        
+        <p class="card-text text-muted small">
+          {{ article.body|truncatechars:120 }}
+        </p>
+      
+      </div>
+
+      <div class="card-footer bg-white d-flex justify-content-between text-muted small">
+        <span>{{ article.created_at|date:"M d, Y" }}</span>
+        <a href="{{ article.get_absolute_url }}"
+           class="text-danger fw-semibold text-decoration-none">
+          Read →
+        </a>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+
+{% endif %}
+
+{% else %}
+
+<!-- NOT LOGGED IN -->
+<div class="card shadow-sm text-center mx-auto" style="max-width:500px;">
+  <div class="card-body p-4">
+    <h3 class="fw-bold mb-3">You are not logged in</h3>
+    <p class="text-muted mb-4">
+      Please login or sign up to continue.
+    </p>
+
+    <a href="{% url 'login' %}" class="btn btn-danger me-2">
+      Login
+    </a>
+    <a href="{% url 'signup' %}" class="btn btn-outline-secondary">
+      Sign Up
+    </a>
+  </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

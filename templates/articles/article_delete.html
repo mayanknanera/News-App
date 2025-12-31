@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Delete Article | DailyPress{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+
+    <div class="card shadow-sm text-center">
+      <div class="card-body p-4">
+
+        <h2 class="h5 fw-bold mb-3 text-danger">
+          Delete Article
+        </h2>
+
+        <p class="mb-4">
+          Are you sure you want to delete
+          <strong>"{{ object.title }}"</strong>?
+        </p>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="d-flex justify-content-center gap-2">
+            <a href="{% url 'article_detail' object.id %}"
+               class="btn btn-outline-secondary">
+              Cancel
+            </a>
+
+            <button type="submit" class="btn btn-danger">
+              Yes, Delete
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
